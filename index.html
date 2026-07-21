@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ILIA — Statuses Tab (Q-DESK-3 mock v2)</title>
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --ink:#222; --muted:#6b7280; --line:#e5e7eb;
+    --accent:#2f6fb0; --green:#1f9d55; --amber:#b7791f; --red:#c0392b; --gray:#9aa0a6;
+    --chip:#eef4fb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.45}
+  .wrap{max-width:1100px;margin:0 auto;padding:20px}
+  /* top-level view switcher */
+  .viewswitch{display:flex;gap:8px;background:#1f2d3d;border-radius:10px;padding:8px;margin-bottom:14px}
+  .viewswitch button{flex:0 0 auto;border:none;background:transparent;color:#c7d2de;font-size:13px;font-weight:700;padding:9px 16px;border-radius:7px;cursor:pointer;letter-spacing:.02em}
+  .viewswitch button:hover{color:#fff}
+  .viewswitch button.active{background:var(--accent);color:#fff}
+  .viewswitch .vs-label{margin-left:auto;align-self:center;color:#8b98a6;font-size:11px;padding-right:6px}
+  .banner{background:#fff8e6;border:1px solid #f0d98c;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#6b5a12;margin-bottom:16px}
+  .banner b{color:#5a4a08}
+  /* policy selector */
+  .selbar{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .selbar .field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.03em}
+  .selbar select{font-size:14px;font-weight:600;letter-spacing:.3px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;min-width:320px}
+  .prod{display:inline-block;font-size:11px;font-weight:700;color:var(--accent);background:var(--chip);border:1px solid #cfe0f2;padding:4px 10px;border-radius:20px}
+  .prodtoggle{margin-left:auto;display:flex;flex-direction:column;gap:4px}
+  .prodtoggle .cap{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+  .prodtoggle .btns{display:flex;gap:6px}
+  .prodtoggle button{border:1px solid #cfd8e2;background:#fff;color:#3b4653;font-size:12px;font-weight:700;padding:6px 12px;border-radius:6px;cursor:pointer}
+  .prodtoggle button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  /* tabs */
+  .tabs{display:flex;gap:0;background:var(--card);border:1px solid var(--line);border-radius:8px;overflow-x:auto;margin-bottom:18px}
+  .tab{padding:14px 16px;font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap;border-bottom:3px solid transparent;text-transform:uppercase;letter-spacing:.02em}
+  .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .tab .newlabel{display:block;font-size:9px;color:var(--red);font-weight:700;letter-spacing:0;text-transform:none;margin-top:2px}
+  /* section cards */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  .card h2{margin:0 0 2px;font-size:16px}
+  .card .sub{color:var(--muted);font-size:12px;margin-bottom:14px}
+  .head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+  .curpill{font-size:11px;font-weight:700;padding:5px 11px;border-radius:20px;white-space:nowrap}
+  .pill-blue{background:#e8f1fb;color:#1d5a94;border:1px solid #bcd7f0}
+  .pill-amber{background:#fdf3e0;color:#8a5d12;border:1px solid #f0d8a6}
+  .pill-green{background:#e6f6ec;color:#137a3e;border:1px solid #b8e3c7}
+  .pill-gray{background:#eef0f2;color:#5b6068;border:1px solid #d8dce0}
+  /* status rows */
+  .row{display:grid;grid-template-columns:1fr 120px 120px;gap:12px;align-items:center;padding:9px 0;border-top:1px solid #f1f3f5}
+  .row:first-of-type{border-top:none}
+  .row .lbl{font-size:13.5px}
+  .row .ts{font-size:12.5px;color:var(--muted);text-align:right}
+  .row .ts.done{color:var(--green)}
+  .st{font-size:12px;font-weight:600;text-align:right}
+  .st.done{color:var(--green)}
+  .st.todo{color:var(--gray)}
+  .stephdr{font-size:10.5px;font-weight:800;letter-spacing:.06em;color:#8a9099;text-transform:uppercase;padding:12px 0 2px}
+  .note{font-size:11.5px;color:var(--muted);font-style:italic;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+  .flag{color:var(--red);font-weight:600;font-style:normal}
+  /* policy lifecycle */
+  .lifecol{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;margin-top:6px}
+  .lgroup{border:1px solid var(--line);border-radius:8px;padding:12px}
+  .lgroup .gt{font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .state{display:block;font-size:12.5px;padding:6px 9px;border-radius:6px;margin-bottom:6px;background:#f7f9fb;border:1px solid #edf0f3;cursor:pointer}
+  .state:hover{border-color:#9cc3e8;background:#eef4fb}
+  .state.cur{background:#e8f1fb;border-color:#9cc3e8;font-weight:700;color:#1d5a94}
+  .state.sel{outline:2px solid var(--accent);outline-offset:0}
+  .state .tagnew{float:right;font-size:8.5px;font-weight:800;color:#fff;background:var(--green);padding:1px 5px;border-radius:8px;letter-spacing:.04em}
+  .clickhint{font-size:11.5px;color:var(--accent);margin:2px 0 10px;font-weight:600}
+  .pdetail{margin-top:14px;border:1px solid #cfe0f2;background:#f4f9fe;border-radius:8px;padding:14px 16px;font-size:13px}
+  .pdetail .pt{font-size:15px;font-weight:700}
+  .pdetail .grp{display:inline-block;font-size:10px;font-weight:700;color:#1d5a94;background:#e3eefb;border:1px solid #bcd7f0;padding:1px 8px;border-radius:10px;margin-left:8px;vertical-align:middle}
+  .pdetail dt{font-weight:700;color:#3b4653;font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;margin-top:10px}
+  .pdetail dd{margin:2px 0 0}
+  .pdetail .draft{color:var(--red);font-weight:600;font-size:11.5px;margin-top:12px;padding-top:10px;border-top:1px dashed #cfe0f2}
+  .removed{margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);font-size:12px}
+  .removed s{color:var(--red)}
+  .removed .arw{color:var(--muted)}
+  /* open questions */
+  .oq{background:#fff;border:1px solid #f0d98c;border-left:4px solid #e0b13c;border-radius:8px;padding:16px 20px}
+  .oq h3{margin:0 0 10px;font-size:14px;color:#7a5c10}
+  .oq ol{margin:0;padding-left:18px}
+  .oq li{margin-bottom:8px;font-size:13px}
+  .masknote{font-size:11px;color:var(--muted);margin:14px 2px 0}
+  /* info / what we're solving */
+  .info{background:#fff;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:16px 20px;margin-bottom:14px}
+  .info h3{margin:0 0 8px;font-size:15px;color:#1d4e7a}
+  .info p{margin:0 0 12px;font-size:13px;color:#404a54}
+  .info .three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .info .box{background:#f6f9fc;border:1px solid #e2ebf3;border-radius:8px;padding:12px 14px}
+  .info .box .n{font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.03em;text-transform:uppercase}
+  .info .box .q{font-size:13.5px;font-weight:700;margin:3px 0 4px}
+  .info .box .d{font-size:12px;color:var(--muted)}
+  @media(max-width:720px){.info .three{grid-template-columns:1fr}}
+  .info .box{cursor:pointer;transition:border-color .1s,background .1s}
+  .info .box:hover{border-color:#9cc3e8;background:#eef4fb}
+  .info .box .more{font-size:10.5px;color:var(--accent);font-weight:700;margin-top:6px}
+  .info .box.impact{grid-column:1/-1;border-left:4px solid #e0b13c;background:#fffaf0}
+  .info .box.impact:hover{background:#fff5e0}
+  .info .box.impact .n{color:#8a5d12}
+  .info .box.sel{outline:2px solid var(--accent);outline-offset:0}
+  .infodetail{margin-top:12px;border:1px solid #cfe0f2;background:#f4f9fe;border-radius:8px;padding:14px 16px;font-size:13px;display:none}
+  .infodetail.show{display:block}
+  .infodetail .pt{font-size:14px;font-weight:700;margin-bottom:6px}
+  .jumpbtn{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer}
+  /* impact inventory */
+  table.invtbl{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:12.5px;margin-bottom:16px}
+  table.invtbl th{background:#eef2f6;text-align:left;padding:10px;font-size:10.5px;color:#4a5560;font-weight:700;border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.02em}
+  table.invtbl td{padding:10px;border-bottom:1px solid #f1f3f5;vertical-align:top}
+  .cfd{font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:10px;white-space:nowrap}
+  .cfd.conf{background:#e6f6ec;color:#137a3e;border:1px solid #b8e3c7}
+  .cfd.cand{background:#fdf3e0;color:#8a5d12;border:1px solid #f0d8a6}
+  .scanbox{background:#f4f9fe;border:1px solid #cfe0f2;border-radius:8px;padding:14px 18px;margin-bottom:14px}
+  .scanbox h4{margin:0 0 8px;font-size:13px;color:#1d5a94}
+  .scanbox code{background:#eef3f8;padding:1px 5px;border-radius:4px;font-size:11px}
+  .rootbox{background:#fff8e6;border:1px solid #f0d98c;border-left:4px solid #e0b13c;border-radius:8px;padding:14px 18px;margin-bottom:14px;font-size:13px}
+  .backbar{margin-bottom:12px}
+  .backbar button{background:#fff;border:1px solid var(--accent);color:var(--accent);font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:6px;cursor:pointer}
+  .backbar button:hover{background:var(--accent);color:#fff}
+  .devbadge{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.03em;color:#fff;background:#6b47b8;padding:2px 7px;border-radius:10px;margin-left:8px;cursor:pointer;text-transform:uppercase;vertical-align:middle}
+  .devbadge:hover{background:#573a96}
+  .devnote{margin-top:8px;background:#f3effb;border:1px solid #d9cef0;border-left:4px solid #6b47b8;border-radius:6px;padding:10px 14px;font-size:12.5px;color:#3d2f5e}
+  .devnote b{color:#4a3576}
+  /* tranche view */
+  .tm-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:12px}
+  .tm-head h1{font-size:26px;margin:0 0 2px;font-family:Georgia,serif}
+  .tm-head .desc{color:var(--muted);font-size:13px}
+  .tm-status{background:#fff;border:1px solid var(--line);border-radius:6px;padding:8px 12px;min-width:200px}
+  .tm-status label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase}
+  .tm-status .v{font-weight:600}
+  .tm-tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:14px;background:#fff;border-radius:8px 8px 0 0;overflow-x:auto}
+  .tm-tabs .t{padding:13px 18px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;white-space:nowrap;border-bottom:3px solid transparent}
+  .tm-tabs .t.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .tm-info{background:#fdf6e3;border:1px solid #ecdca6;border-radius:6px;padding:10px 14px;font-size:12.5px;margin-bottom:14px}
+  table.tm{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:12.5px}
+  table.tm th{background:#eef2f6;text-align:left;padding:12px 10px;font-size:11px;color:#4a5560;font-weight:700;border-bottom:1px solid var(--line)}
+  table.tm td{padding:12px 10px;border-bottom:1px solid #f1f3f5}
+  table.tm td.name{color:var(--accent);font-weight:600}
+  .col-fix{background:#fff4f4}
+  th.col-fix{background:#fbe3e3}
+  .col-add{background:#eefaf1}
+  th.col-add{background:#d8f2e0}
+  .wrongval{color:var(--red);text-decoration:line-through}
+  .rightval{color:var(--green);font-weight:700}
+  .tm-callout{background:#fff;border:1px solid #f0c0c0;border-left:4px solid var(--red);border-radius:8px;padding:14px 18px;margin-top:14px;font-size:13px}
+  .tm-callout b{color:#a5281f}
+  .hint{font-size:11px;color:#b23}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- TOP-LEVEL VIEW SWITCHER (on every screen) -->
+  <div class="viewswitch">
+    <button data-view="client" class="active" onclick="setView('client')">Client Details</button>
+    <button data-view="tranche" onclick="setView('tranche')">Tranche Management</button>
+    <button data-view="impact" onclick="setView('impact')">Impact Inventory</button>
+    <span class="vs-label">view switch — go back &amp; forth</span>
+  </div>
+
+  <!-- ============ VIEW 1: CLIENT DETAILS ============ -->
+  <div id="view-client">
+
+    <div class="banner">
+      <b>Q-DESK-3 · MOCK / not built (v2).</b> Relabeled <b>Statuses</b> tab. Client-identifying values masked (•••). Use the <b>Kai-Zen / IUL</b> toggle (right) to see product-dynamic enrollment; the <b>policy dropdown</b> reflects clients with more than one policy. For review only — no Jira until requirements + impact are confirmed.
+    </div>
+
+    <div class="info">
+      <h3>What we're solving</h3>
+      <p>Right now ILIA mixes three different kinds of status together, so the wrong information can show up in the wrong place — for example, a <i>policy</i> status ("Policy Issued") appearing under <i>Account Status</i>. This tab pulls a client's journey apart into three clear, plain-language questions, each tracked on its own so staff always see the right status in the right spot — here and in Tranche Management.</p>
+      <div class="three">
+        <div class="box" data-i="account" onclick="showInfo(this)"><div class="n">1 · Account</div><div class="q">Are they in the system?</div><div class="d">Did the client get invited and set up their account?</div><div class="more">▸ click to dive in</div></div>
+        <div class="box" data-i="enroll" onclick="showInfo(this)"><div class="n">2 · Enrollment</div><div class="q">How far along in signing up?</div><div class="d">Which step of the enrollment process are they on? (Steps differ by product.)</div><div class="more">▸ click to dive in</div></div>
+        <div class="box" data-i="policy" onclick="showInfo(this)"><div class="n">3 · Policy</div><div class="q">What's happening with the policy?</div><div class="d">The state of the actual insurance policy with the carrier — proposed, issued, declined, etc.</div><div class="more">▸ click to dive in</div></div>
+        <div class="box impact" data-i="impact" onclick="showInfo(this)"><div class="n">⚠ Possible impact list</div><div class="q">What else does this touch?</div><div class="d">Other screens that show status wrong or are affected by the cleanup. Click to see findings, or open the full Impact Inventory.</div><div class="more">▸ click to dive in</div></div>
+      </div>
+      <div class="infodetail" id="infoDetail"></div>
+    </div>
+
+    <div class="selbar">
+      <div class="field">
+        <label>Policy Number <span class="hint">(dropdown — a client can hold more than one policy)</span></label>
+        <select id="policySel">
+          <option>••••••••-••••-••••-••••-••••••150cde  (Policy 1)</option>
+          <option>••••••••-••••-••••-••••-••••••882af1  (Policy 2)</option>
+        </select>
+      </div>
+      <span class="prod" id="prodPill">PRODUCT: KAI-ZEN</span>
+      <div class="prodtoggle">
+        <span class="cap">Switch product (demo)</span>
+        <div class="btns">
+          <button id="btnKaizen" class="active" onclick="setProduct('kaizen')">Kai-Zen</button>
+          <button id="btnIul" onclick="setProduct('iul')">IUL</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab">Client Profile</div>
+      <div class="tab active">Statuses<span class="newlabel">← relabeled from "Participant Status"</span></div>
+      <div class="tab">Enrollment Details</div>
+      <div class="tab">My Action Items</div>
+      <div class="tab">Illustrations</div>
+      <div class="tab">Documents</div>
+      <div class="tab">Notes</div>
+      <div class="tab">Giftor Details</div>
+      <div class="tab">Case Details</div>
+    </div>
+
+    <!-- 1. ACCOUNT -->
+    <div class="card">
+      <div class="head">
+        <div>
+          <h2>1 · Account Status</h2>
+          <div class="sub">The participant's account lifecycle — product-independent, timestamped.</div>
+        </div>
+        <span class="curpill pill-amber">Current: Opened Invite</span>
+      </div>
+      <div class="row"><div class="lbl">Invited</div><div class="ts done">07-17-2026</div><div class="st done">Completed</div></div>
+      <div class="row"><div class="lbl">Opened Email Invite</div><div class="ts done">07-17-2026</div><div class="st done">Completed</div></div>
+      <div class="row"><div class="lbl">Created Account</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+      <div class="row"><div class="lbl">Disabled <span style="font-size:11px;color:var(--muted)">— manual admin action</span> <span class="devbadge" onclick="toggleDev('devAcct')">Dev Note</span></div><div class="ts">—</div><div class="st todo">Not disabled</div></div>
+      <div class="devnote" id="devAcct" hidden><b>Dev note:</b> A <b>Disabled</b> account status is <b>not the authoritative status of the account across ILIA</b>. It reflects only the Account track — disabling the account does not override or stand in for the client's Enrollment or Policy status, and other screens/rollups must not treat "Disabled" as the master/headline status for the record.</div>
+      <div class="note">State machine: <b>Invited → Opened Invite → Account Created → Disabled</b>. <b>Disabled</b> is set manually when an admin disables a client in ILIA — it's not part of the automatic invite→account progression, and can apply from any prior state. (Kyle's set: invited · created · disabled.)</div>
+    </div>
+
+    <!-- 2. ENROLLMENT -->
+    <div class="card">
+      <div class="head">
+        <div>
+          <h2>2 · Enrollment Status <span style="font-weight:400;color:var(--muted);font-size:12px" id="enrProdLabel">— Kai-Zen</span></h2>
+          <div class="sub">Where the client is in the enrollment workflow. <b>Product-dynamic</b> — rendered from the product's step template; headline status is rolled up from the checklist below.</div>
+        </div>
+        <span class="curpill pill-amber" id="enrBadge">Current: In Progress — Step 1</span>
+      </div>
+
+      <!-- KAI-ZEN steps -->
+      <div class="enr-kaizen">
+        <div class="row"><div class="lbl">Started Enrollment</div><div class="ts done">07-16-2026</div><div class="st done">Completed</div></div>
+        <div class="stephdr">Step 1 · Basic Info</div>
+        <div class="row"><div class="lbl">Basic info, contribution, Required Docs (DL, Tax Returns, etc.)</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="stephdr">Step 2 · Application</div>
+        <div class="row"><div class="lbl">Questionnaire Completed</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="row"><div class="lbl">Client Application Signed</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="row"><div class="lbl">Agent Report Signed</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="row"><div class="lbl">Application Submitted to Carrier</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="row"><div class="lbl">Application Received by Carrier</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="stephdr">Step 3 · Proposal</div>
+        <div class="row"><div class="lbl">Submitted to Agent</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="row"><div class="lbl">Approved by Agent</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="row"><div class="lbl">Approved / Signed by Client</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="stephdr">Step 4 · Trustee Signs & Final Docs</div>
+        <div class="row"><div class="lbl">Client Payment Received</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="row"><div class="lbl">Trustee Signed</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="row"><div class="lbl">Final Docs Sent to Carrier</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="note">All steps complete → headline status = <b>Enrollment Completed</b>.</div>
+      </div>
+
+      <!-- IUL steps (placeholder) -->
+      <div class="enr-iul" hidden>
+        <div class="row"><div class="lbl">Started Enrollment</div><div class="ts done">07-16-2026</div><div class="st done">Completed</div></div>
+        <div class="stephdr">Step 1 · Basic Info</div>
+        <div class="row"><div class="lbl">Basic info, contribution, Required Docs</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="stephdr">Step 2 · Application</div>
+        <div class="row"><div class="lbl">Questionnaire Completed</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="row"><div class="lbl">Client Application Signed</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="row"><div class="lbl">Agent Report Signed</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="row"><div class="lbl">Application Submitted to Carrier</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="stephdr">Step 3 · Underwriting</div>
+        <div class="row"><div class="lbl">Medical Exam / Labs</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="row"><div class="lbl">Underwriting Review</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="row"><div class="lbl">Carrier Decision</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="stephdr">Step 4 · Policy Issue</div>
+        <div class="row"><div class="lbl">Client Payment Received</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="row"><div class="lbl">Policy Delivered / Signed</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
+        <div class="note"><span class="flag">IUL step set is a PLACEHOLDER</span> — no trustee/trust step (individual life). Needs the real IUL enrollment screenshot/definition to finalize.</div>
+      </div>
+    </div>
+
+    <!-- 3. POLICY -->
+    <div class="card">
+      <div class="head">
+        <div>
+          <h2>3 · Policy Status</h2>
+          <div class="sub">The insurance policy's own lifecycle (carrier-side, post-enrollment). Cleaned enum below.</div>
+        </div>
+        <span class="curpill pill-blue">Current: Proposed</span>
+      </div>
+
+      <div class="clickhint">▸ Click any status to see what defines it and how ILIA determines it (proposed rules — need confirmation).</div>
+      <div class="lifecol">
+        <div class="lgroup">
+          <div class="gt">Pre-Issue</div>
+          <span class="state cur" data-k="proposed" onclick="showPolicyDef(this)">Proposed</span>
+          <span class="state" data-k="design" onclick="showPolicyDef(this)">Design</span>
+          <span class="state" data-k="quoted" onclick="showPolicyDef(this)">Quoted</span>
+          <span class="state" data-k="payment" onclick="showPolicyDef(this)">Payment Received</span>
+          <span class="state" data-k="casesub" onclick="showPolicyDef(this)">Case Submitted</span>
+        </div>
+        <div class="lgroup">
+          <div class="gt">Issued</div>
+          <span class="state" data-k="inforce" onclick="showPolicyDef(this)">In-Force</span>
+          <span class="state" data-k="inforceov" onclick="showPolicyDef(this)">In-Force-Override</span>
+        </div>
+        <div class="lgroup">
+          <div class="gt">Did not issue</div>
+          <span class="state" data-k="meddecl" onclick="showPolicyDef(this)">Medically Declined <span class="tagnew">NEW</span></span>
+          <span class="state" data-k="clidecl" onclick="showPolicyDef(this)">Client Declined <span class="tagnew">NEW</span></span>
+          <span class="state" data-k="inactive" onclick="showPolicyDef(this)">Inactive <span class="tagnew">NEW</span></span>
+        </div>
+        <div class="lgroup">
+          <div class="gt">Terminated (was active)</div>
+          <span class="state" data-k="surr" onclick="showPolicyDef(this)">Surrendered</span>
+          <span class="state" data-k="deceased" onclick="showPolicyDef(this)">Deceased</span>
+        </div>
+      </div>
+      <div class="pdetail" id="policyDetail">
+        <div class="pt">Proposed <span class="grp">Pre-Issue</span></div>
+        <dl>
+          <dt>What it means</dt><dd>A proposal/illustration exists for the case, but design and quote aren't finalized. The earliest active policy state.</dd>
+          <dt>How ILIA determines it (proposed)</dt><dd>A proposal record is created for the policy — case has started but has not yet advanced to Design/Quoted.</dd>
+          <dt>Linked track</dt><dd>Enrollment: the Proposal step has begun.</dd>
+        </dl>
+        <div class="draft">PROPOSED definition/trigger — needs confirmation of ILIA's actual rule. Each status needs a documented entry condition (which system event or field flips it).</div>
+      </div>
+
+      <div class="removed">
+        <b>Removed from policy status</b> (they belong to other tracks): &nbsp;
+        <s>INVITED</s> <span class="arw">→ Account status</span> &nbsp;·&nbsp;
+        <s>ENROLLING</s> <span class="arw">→ Enrollment status</span>
+      </div>
+      <div class="note">Proposed handoff rule: enrollment drives policy status through <b>Case Submitted</b>; carrier events drive it after (Issued / declined / etc.). <span class="flag">Open: is this enum shared across products or per-product like enrollment? — flagged, not assumed.</span></div>
+    </div>
+
+    <div class="oq">
+      <h3>Open questions / impact to confirm before requirements are locked</h3>
+      <ol>
+        <li><b>Policy-status enum scope:</b> shared across all products, or per-product (configurable) like the enrollment step set? — <i>flagged per your call.</i></li>
+        <li><b>IUL enrollment steps:</b> the IUL track above is a placeholder — need the real IUL step definition/screenshot to finalize.</li>
+        <li><b>Track handoff:</b> confirm enrollment auto-drives policy status up to "Case Submitted," then carrier events take over.</li>
+        <li><b>"Inactive" definition:</b> never-activated vs lapsed/dormant?</li>
+        <li><b>Client Snapshot "Current Status":</b> which single track is the headline (composite, or furthest-along)?</li>
+        <li><b>Tranche Management cleanup:</b> the tranche grid currently renders policy data under the <b>Account Status</b> column — see the Tranche Management view. Same three-track model must apply there.</li>
+        <li><b>Backfill/migration:</b> existing policies tagged INVITED / ENROLLING need remapping when removed.</li>
+      </ol>
+    </div>
+
+    <div class="masknote">PII masked per CIH Core §2 — policy numbers partially masked; no client/agent names shown.</div>
+  </div>
+
+  <!-- ============ VIEW 2: TRANCHE MANAGEMENT ============ -->
+  <div id="view-tranche" hidden>
+
+    <div class="backbar"><button onclick="setView('client')">← Close · back to the mock (Client Details)</button></div>
+
+    <div class="banner">
+      <b>Q-DESK-3 · MOCK / not built (v2) — Tranche Management view.</b> Reached from the view switch above. The status cleanup impacts this grid too: today the <b>Account Status</b> column shows <b>policy</b> data. Names/IMOs masked (•••).
+    </div>
+
+    <div class="tm-head">
+      <div>
+        <h1>Manage Tranche</h1>
+        <div class="desc">Edit this tranche, change status, or view reports of insured.</div>
+      </div>
+      <div class="tm-status">
+        <label>Tranche Status</label>
+        <div class="v">Open ▾</div>
+      </div>
+    </div>
+
+    <div class="tm-tabs">
+      <div class="t">Edit Tranche</div>
+      <div class="t active">Workflow</div>
+      <div class="t">Prospects</div>
+      <div class="t">Tranche Documents</div>
+      <div class="t">Tranche Notes</div>
+    </div>
+
+    <div class="tm-info"><b>Tranche:</b> 1 &nbsp; <b>Master Trust Date:</b> ••/••/•••• &nbsp; <b>Projected Funding:</b> ••/••/•••• &nbsp; <b>Bank:</b> •••</div>
+
+    <table class="tm">
+      <thead>
+        <tr>
+          <th>Tranche #</th><th>First Name</th><th>Last Name</th><th>Insured Type</th>
+          <th>App Type</th><th>Product Type</th>
+          <th class="col-fix">Account Status</th>
+          <th class="col-add">Enrollment Status</th>
+          <th>Policy Status</th>
+          <th>Case Processor</th><th>IMO</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td><td class="name">••••••</td><td>••••••</td><td>Individual</td>
+          <td>ILIA</td><td>Kai-Zen</td>
+          <td class="col-fix"><span class="wrongval">Policy Issued</span><br><span class="rightval">Account Created</span></td>
+          <td class="col-add">Enrollment Completed</td>
+          <td>In-Force-Override</td>
+          <td>•••• ▾</td><td>••••••</td>
+        </tr>
+        <tr>
+          <td>1</td><td class="name">••••••</td><td>••••••</td><td>Individual</td>
+          <td>PAPER</td><td>Kai-Zen</td>
+          <td class="col-fix"><span class="wrongval">Policy Issued</span><br><span class="rightval">Account Created</span></td>
+          <td class="col-add">Enrollment Completed</td>
+          <td>In-Force</td>
+          <td>•••• ▾</td><td>••••••</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="tm-callout">
+      <b>The bug this cleanup fixes:</b> the <b>Account Status</b> column here is rendering a <b>policy</b> value ("Policy Issued") — a policy status, not an account status. After the three-track fix, that column shows account-lifecycle values only (<b>Invited / Opened Invite / Account Created / Disabled</b>), while <b>Policy Status</b> keeps the cleaned policy enum (In-Force, etc.). Struck red = current wrong value; green = corrected. A new <b>Enrollment Status</b> column (green) is added so all three tracks — Account · Policy · Enrollment — appear side by side, matching the Statuses tab.
+    </div>
+
+    <div class="masknote">PII masked per CIH Core §2 — names, IMOs, dates masked; test-tranche data only.</div>
+  </div>
+
+  <!-- ============ VIEW 3: IMPACT INVENTORY ============ -->
+  <div id="view-impact" hidden>
+
+    <div class="backbar"><button onclick="setView('client')">← Close · back to the mock (Client Details)</button></div>
+
+    <div class="banner">
+      <b>Q-DESK-3 · Impact Inventory (working register).</b> Every ILIA surface that shows status wrong or is affected by the three-track cleanup. <b>Confirmed</b> = seen in the screenshots; <b>Candidate</b> = likely, to be confirmed by a repo scan (access pending). This is a living list — it grows as we verify.
+    </div>
+
+    <div class="rootbox">
+      <b>Root-cause to verify first (repo access pending):</b> the Tranche grid showing a <i>policy</i> value under <i>Account Status</i> suggests columns may be bound to a single overloaded "status" field rather than three separate fields. If so, the fix is a <b>data-layer split</b> (one status → account / enrollment / policy) and every screen below inherits it. Confirming this sizes the whole effort — it's the #1 thing to check once the repo is connected.
+    </div>
+
+    <table class="invtbl">
+      <thead>
+        <tr><th style="width:30px">#</th><th>Surface</th><th>Where it lives</th><th>What's wrong / impact</th><th>Track(s)</th><th>Proposed fix</th><th>Confidence</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><b>Statuses tab</b> (was Participant Status)</td><td>Client detail screen</td><td>Three tracks collapsed into one tab; label outdated</td><td>All 3</td><td>Relabel + split into Account / Enrollment / Policy sections</td><td><span class="cfd conf">Confirmed</span></td></tr>
+        <tr><td>2</td><td><b>Client Snapshot</b> "Current Status"</td><td>Client profile card</td><td>Shows one blended status; which track is the headline is undefined</td><td>All 3</td><td>Define the headline rule (composite or furthest-along)</td><td><span class="cfd conf">Confirmed</span></td></tr>
+        <tr><td>3</td><td><b>Tranche Workflow grid</b></td><td>Manage Tranche → Workflow</td><td>"Account Status" column renders a <b>policy</b> value ("Policy Issued")</td><td>Account + Policy</td><td>Bind columns to correct fields; add Enrollment column (Acct → Enroll → Policy)</td><td><span class="cfd conf">Confirmed</span></td></tr>
+        <tr><td>4</td><td><b>Tranche "Export List"</b></td><td>Manage Tranche → Workflow</td><td>Export inherits the wrong columns → error spreads into spreadsheets</td><td>Account + Policy</td><td>Fix at the source columns (follows #3)</td><td><span class="cfd conf">Confirmed</span></td></tr>
+        <tr><td>5</td><td>Client / participant <b>list &amp; status filters</b></td><td>Global lists / search</td><td>May show blended status; filters may use removed enum (INVITED/ENROLLING)</td><td>All 3</td><td>Point at correct field; update filter options</td><td><span class="cfd cand">Candidate</span></td></tr>
+        <tr><td>6</td><td>Agent <b>book-of-business</b> / admin dashboards</td><td>Dashboards</td><td>Status counts/rollups may double-count or mislabel</td><td>All 3</td><td>Re-map to the three fields</td><td><span class="cfd cand">Candidate</span></td></tr>
+        <tr><td>7</td><td>Other client tabs — <b>Enrollment Details, My Action Items, Case Details</b></td><td>Client detail screen</td><td>Action items / gating often derive from status</td><td>Enrollment + Policy</td><td>Verify derivation logic</td><td><span class="cfd cand">Candidate</span></td></tr>
+        <tr><td>8</td><td>Tranche <b>Prospects tab</b> &amp; <b>Tranche Alerts</b></td><td>Manage Tranche</td><td>Alerts are typically status-triggered</td><td>All 3</td><td>Verify alert triggers use the right track</td><td><span class="cfd cand">Candidate</span></td></tr>
+        <tr><td>9</td><td><b>Status-setter dropdowns</b></td><td>Admin edit screens</td><td>Carry the raw enum, including values being removed</td><td>Policy</td><td>Update options; block removed values</td><td><span class="cfd cand">Candidate</span></td></tr>
+        <tr><td>10</td><td><b>Reports, statements &amp; notification emails</b></td><td>Outputs / templates</td><td>Print a status label to clients/agents</td><td>All 3</td><td>Update templates to the correct track/label</td><td><span class="cfd cand">Candidate</span></td></tr>
+        <tr><td>11</td><td><b>Downstream feeds</b> (e.g. Salesforce/SAC) &amp; API</td><td>Integrations</td><td>Serialized status fields flow to other systems</td><td>All 3</td><td>Coordinate contract change with consumers</td><td><span class="cfd cand">Candidate</span></td></tr>
+        <tr><td>12</td><td><b>NIW⟷ILIA Tech Dashboard</b> (S-CIH-DASH)</td><td>Live dashboard</td><td>May roll up status counts</td><td>All 3</td><td>Re-map once fields split</td><td><span class="cfd cand">Candidate</span></td></tr>
+        <tr><td>13</td><td><b>Historical data migration</b></td><td>Database</td><td>Existing records tagged INVITED / ENROLLING need remapping</td><td>All 3</td><td>One-time migration to correct tracks</td><td><span class="cfd cand">Candidate</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="scanbox">
+      <h4>How we make this exhaustive once the repo is connected</h4>
+      <p style="margin:0 0 8px;font-size:12.5px;color:var(--muted)">Scan for four things and cross-map them — every hit becomes a row above:</p>
+      <ol style="margin:0;padding-left:18px;font-size:12.5px">
+        <li><b>Enum literals</b> — <code>INVITED, ENROLLING, PROPOSED, DESIGN, QUOTED, PAYMENTRECEIVED, CASESUBMITTED, DECEASED, IN-FORCE, IN-FORCE-OVERRIDE, SURRENDERED</code></li>
+        <li><b>Field names</b> — <code>policyStatus / accountStatus / enrollmentStatus</code> + variants (this is where cross-wiring shows up)</li>
+        <li><b>UI labels</b> — "Account Status", "Policy Status", "Participant Status", "Current Status"</li>
+        <li><b>Non-UI consumers</b> — exports, report/statement &amp; email templates, API serializers, downstream integrations, DB migration</li>
+      </ol>
+    </div>
+
+    <div class="masknote">Working register — no client data. Will mirror to the Q-DESK Confluence log on request.</div>
+  </div>
+
+</div>
+
+<script>
+  function toggleDev(id){ var e=document.getElementById(id); e.hidden=!e.hidden; }
+  function setView(v){
+    ['client','tranche','impact'].forEach(function(id){
+      document.getElementById('view-'+id).hidden = (id!==v);
+    });
+    document.querySelectorAll('.viewswitch button').forEach(function(b){
+      b.classList.toggle('active', b.dataset.view===v);
+    });
+    window.scrollTo(0,0);
+  }
+  var INFO_DEFS = {
+    account: '<div class="pt">1 · Account — Are they in the system?</div><p>Tracks the participant\'s login/account lifecycle: <b>Invited → Opened Invite → Account Created → Disabled</b>. Product-independent and timestamped. It answers only "has the client been invited and set up their account" — nothing about the policy itself. This is why "Policy Issued" should never appear here.</p>',
+    enroll:  '<div class="pt">2 · Enrollment — How far along in signing up?</div><p>Tracks progress through the sign-up workflow. The steps <b>differ by product</b> (Kai-Zen has trustee/final-doc steps; IUL has underwriting steps), so it renders from the product\'s template. The headline rolls up from the checklist to <b>Enrollment Completed</b> once all steps are done.</p>',
+    policy:  '<div class="pt">3 · Policy — What\'s happening with the policy?</div><p>Tracks the insurance policy\'s own life with the carrier: <b>Pre-Issue → Issued</b>, or <b>Did-not-issue / Terminated</b>. This is the cleaned enum — the old <b>INVITED</b> (an account state) and <b>ENROLLING</b> (an enrollment state) values are removed and moved to the correct tracks.</p>',
+    impact:  '<div class="pt">⚠ Possible impact list — what else does this touch?</div><p><b>Confirmed so far:</b> the Statuses tab, the Client Snapshot "Current Status", the Tranche grid (Account Status showing a policy value), and the Tranche export.</p><p><b>Likely candidates (to verify by repo scan):</b> client lists &amp; status filters, agent/admin dashboards, other client tabs (Enrollment Details / My Action Items / Case Details), Tranche Prospects &amp; Alerts, status-setter dropdowns, reports &amp; notification emails, downstream feeds (e.g. Salesforce/SAC), the Tech Dashboard, and historical-data migration.</p><button class="jumpbtn" onclick="setView(\'impact\')">Open full Impact Inventory →</button>'
+  };
+  function showInfo(el){
+    var k = el.getAttribute('data-i'); var html = INFO_DEFS[k]; if(!html) return;
+    var panel = document.getElementById('infoDetail');
+    var already = el.classList.contains('sel');
+    document.querySelectorAll('.info .box').forEach(function(b){b.classList.remove('sel');});
+    if(already){ panel.classList.remove('show'); return; }
+    el.classList.add('sel');
+    panel.innerHTML = html;
+    panel.classList.add('show');
+  }
+  var POLICY_DEFS = {
+    proposed:  {n:'Proposed', g:'Pre-Issue', m:'A proposal/illustration exists for the case, but design and quote aren’t finalized. The earliest active policy state.', t:'A proposal record is created for the policy — case started, not yet advanced to Design/Quoted.', l:'Enrollment: the Proposal step has begun.'},
+    design:    {n:'Design', g:'Pre-Issue', m:'The case is being designed/structured (product config, funding design).', t:'Case enters the design phase — illustration is in design, not yet a firm quote.', l:'Enrollment: Proposal / design work in progress.'},
+    quoted:    {n:'Quoted', g:'Pre-Issue', m:'A firm quote/illustration has been produced and is ready to present.', t:'A finalized quote/illustration is generated and saved on the case.', l:'Enrollment: Proposal approved/presented.'},
+    payment:   {n:'Payment Received', g:'Pre-Issue', m:'The client’s initial payment/premium has been received.', t:'Payment is posted against the policy.', l:'Enrollment: “Client Payment Received” step complete.'},
+    casesub:   {n:'Case Submitted', g:'Pre-Issue', m:'The application package has been submitted to the carrier. Last state before carrier owns it.', t:'Application / final docs submitted to carrier.', l:'Enrollment: “Application Submitted” / “Final Docs Sent to Carrier” complete. Handoff point — carrier events drive status after this.'},
+    inforce:   {n:'In-Force', g:'Issued', m:'The carrier issued the policy and it is active.', t:'Carrier confirms the policy is issued/active (feed or manual confirmation).', l:'Post-enrollment — carrier-driven.'},
+    inforceov: {n:'In-Force-Override', g:'Issued', m:'Policy marked in-force by an admin override rather than the normal carrier feed.', t:'Admin manually sets in-force (override action) — needs a reason/audit trail.', l:'Post-enrollment — admin action.'},
+    meddecl:   {n:'Medically Declined', g:'Did not issue', m:'The carrier declined the case for medical / underwriting reasons.', t:'Carrier underwriting decision = declined (medical).', l:'Terminal-negative. (NEW value.)'},
+    clidecl:   {n:'Client Declined', g:'Did not issue', m:'The client chose not to proceed / declined the offer.', t:'Client action, or admin marks the case client-declined.', l:'Terminal-negative. (NEW value.)'},
+    inactive:  {n:'Inactive', g:'Did not issue', m:'Case is dormant / abandoned and never activated. ⚠ Definition to confirm: never-activated vs lapsed.', t:'Inactivity rule (e.g., no progress in N days) or admin sets inactive — exact rule TBD.', l:'Terminal-negative. (NEW value — needs a clear definition.)'},
+    surr:      {n:'Surrendered', g:'Terminated', m:'Policy was in-force and has been surrendered/cancelled.', t:'Carrier surrender/cancellation event.', l:'Was active, now terminated.'},
+    deceased:  {n:'Deceased', g:'Terminated', m:'The insured is deceased.', t:'Death notification / claim recorded.', l:'Was active, now terminated.'}
+  };
+  function showPolicyDef(el){
+    var k = el.getAttribute('data-k'); var d = POLICY_DEFS[k]; if(!d) return;
+    document.querySelectorAll('.lifecol .state').forEach(function(s){s.classList.remove('sel');});
+    el.classList.add('sel');
+    document.getElementById('policyDetail').innerHTML =
+      '<div class="pt">'+d.n+' <span class="grp">'+d.g+'</span></div>'+
+      '<dl><dt>What it means</dt><dd>'+d.m+'</dd>'+
+      '<dt>How ILIA determines it (proposed)</dt><dd>'+d.t+'</dd>'+
+      '<dt>Linked track</dt><dd>'+d.l+'</dd></dl>'+
+      '<div class="draft">PROPOSED definition/trigger — needs confirmation of ILIA’s actual rule. Each status needs a documented entry condition (which system event or field flips it).</div>';
+  }
+  function setProduct(p){
+    var kz = p==='kaizen';
+    document.querySelectorAll('.enr-kaizen').forEach(function(e){e.hidden=!kz;});
+    document.querySelectorAll('.enr-iul').forEach(function(e){e.hidden=kz;});
+    document.getElementById('prodPill').textContent = 'PRODUCT: ' + (kz?'KAI-ZEN':'IUL');
+    document.getElementById('enrProdLabel').textContent = kz?'— Kai-Zen':'— IUL';
+    document.getElementById('btnKaizen').classList.toggle('active', kz);
+    document.getElementById('btnIul').classList.toggle('active', !kz);
+  }
+</script>
+</body>
+</html>
