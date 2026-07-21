@@ -174,8 +174,8 @@
 
   <!-- TOP-LEVEL VIEW SWITCHER (on every screen) -->
   <div class="viewswitch">
-    <button data-view="client" class="active" onclick="setView('client')">Client Details</button>
-    <button data-view="tranche" onclick="setView('tranche')">Tranche Management</button>
+    <button data-view="client" class="active" onclick="setView('client')">Status Standard Update</button>
+    <button data-view="tranche" onclick="setView('tranche')">Tranche Management Impact</button>
     <button data-view="impact" onclick="setView('impact')">Impact Inventory</button>
     <span class="vs-label">view switch — go back &amp; forth</span>
   </div>
@@ -463,7 +463,7 @@
   <!-- ============ VIEW 2: TRANCHE MANAGEMENT ============ -->
   <div id="view-tranche" hidden>
 
-    <div class="backbar"><button onclick="setView('client')">← Close · back to the mock (Client Details)</button></div>
+    <div class="backbar"><button onclick="setView('client')">← Close · back to Status Standard Update</button></div>
 
     <div class="banner">
       <b>Q-DESK-3 · MOCK / not built (v2) — Tranche Management view.</b> Reached from the view switch above. The status cleanup impacts this grid too: today the <b>Account Status</b> column shows <b>policy</b> data. Names/IMOs masked (•••).
@@ -531,7 +531,7 @@
   <!-- ============ VIEW 3: IMPACT INVENTORY ============ -->
   <div id="view-impact" hidden>
 
-    <div class="backbar"><button onclick="setView('client')">← Close · back to the mock (Client Details)</button></div>
+    <div class="backbar"><button onclick="setView('client')">← Close · back to Status Standard Update</button></div>
 
     <div class="banner">
       <b>Q-DESK-3 · Impact Inventory (working register).</b> Every ILIA surface that shows status wrong or is affected by the three-track cleanup. <b>Confirmed</b> = seen in the screenshots; <b>Candidate</b> = likely, to be confirmed by a repo scan (access pending). This is a living list — it grows as we verify.
