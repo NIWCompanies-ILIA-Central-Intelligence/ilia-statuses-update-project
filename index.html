@@ -104,6 +104,18 @@
   .infodetail.show{display:block}
   .infodetail .pt{font-size:14px;font-weight:700;margin-bottom:6px}
   .jumpbtn{display:inline-block;margin-top:10px;background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer}
+  /* plan + standard */
+  .planlist{margin:0;padding-left:20px;font-size:13px}
+  .planlist li{margin-bottom:7px}
+  .standardcard h2 .propose{font-size:10px;font-weight:800;color:#8a5d12;background:#fdf3e0;border:1px solid #f0d8a6;padding:2px 8px;border-radius:10px;vertical-align:middle;margin-left:8px;text-transform:uppercase;letter-spacing:.03em}
+  .track{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-top:12px}
+  .track .tname{font-size:14px;font-weight:700;margin-bottom:6px}
+  .track .var{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle;text-transform:uppercase;letter-spacing:.03em;background:#eef0f2;color:#5b6068;border:1px solid #d8dce0}
+  .track .var.hasvar{background:#fdf3e0;color:#8a5d12;border-color:#f0d8a6}
+  .track .var.novar{background:#e6f6ec;color:#137a3e;border-color:#b8e3c7}
+  .track .tvals{font-size:13px;margin:4px 0;padding:6px 10px;background:#f7f9fb;border:1px solid #edf0f3;border-radius:6px}
+  .track .tnote{font-size:11.5px;color:var(--muted);font-style:italic;margin-top:7px}
+  .newtag{font-size:8.5px;font-weight:800;color:#fff;background:var(--green);padding:1px 5px;border-radius:8px;letter-spacing:.04em}
   /* impact inventory */
   table.invtbl{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:12.5px;margin-bottom:16px}
   table.invtbl th{background:#eef2f6;text-align:left;padding:10px;font-size:10.5px;color:#4a5560;font-weight:700;border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.02em}
@@ -163,12 +175,12 @@
   <div id="view-client">
 
     <div class="banner">
-      <b>Q-DESK-3 · MOCK / not built (v2).</b> Relabeled <b>Statuses</b> tab. Client-identifying values masked (•••). Use the <b>Kai-Zen / IUL</b> toggle (right) to see product-dynamic enrollment; the <b>policy dropdown</b> reflects clients with more than one policy. For review only — no Jira until requirements + impact are confirmed.
+      <b>Standardizing Statuses in ILIA</b> — Q-DESK-3 · MOCK / not built. <b>Goal:</b> one standard set of statuses, used consistently on every ILIA screen. Client-identifying values masked (•••). Use the <b>Kai-Zen / IUL</b> toggle (right) to see product-dynamic enrollment; the <b>policy dropdown</b> reflects clients with more than one policy. Review only — no Jira until requirements + impact are confirmed.
     </div>
 
     <div class="info">
       <h3>What we're solving</h3>
-      <p>Right now ILIA mixes three different kinds of status together, so the wrong information can show up in the wrong place — for example, a <i>policy</i> status ("Policy Issued") appearing under <i>Account Status</i>. This tab pulls a client's journey apart into three clear, plain-language questions, each tracked on its own so staff always see the right status in the right spot — here and in Tranche Management.</p>
+      <p>Across ILIA there's no single standard for status — the same states are spelled differently on different screens, three kinds of status get mixed together, and the wrong one can surface in the wrong place (e.g. a <i>policy</i> status "Policy Issued" showing under <i>Account Status</i>). <b>The goal of this project is to standardize statuses across all of ILIA:</b> define one official set for each of the three tracks below, then apply it consistently on every screen — this tab, Tranche Management, dashboards, filters, exports, and the data model underneath.</p>
       <div class="three">
         <div class="box" data-i="account" onclick="showInfo(this)"><div class="n">1 · Account</div><div class="q">Are they in the system?</div><div class="d">Did the client get invited and set up their account?</div><div class="more">▸ click to dive in</div></div>
         <div class="box" data-i="enroll" onclick="showInfo(this)"><div class="n">2 · Enrollment</div><div class="q">How far along in signing up?</div><div class="d">Which step of the enrollment process are they on? (Steps differ by product.)</div><div class="more">▸ click to dive in</div></div>
@@ -176,6 +188,44 @@
         <div class="box impact" data-i="impact" onclick="showInfo(this)"><div class="n">⚠ Possible impact list</div><div class="q">What else does this touch?</div><div class="d">Other screens that show status wrong or are affected by the cleanup. Click to see findings, or open the full Impact Inventory.</div><div class="more">▸ click to dive in</div></div>
       </div>
       <div class="infodetail" id="infoDetail"></div>
+    </div>
+
+    <div class="info">
+      <h3>The plan</h3>
+      <ol class="planlist">
+        <li><b>Define one standard</b> — a single, named set of statuses for each of the three tracks (Account · Enrollment · Policy), each with one canonical label, code value, definition, and what sets it.</li>
+        <li><b>Map the impact</b> — inventory every ILIA screen that shows a status (see <b>Impact Inventory</b>) and reconcile with existing tickets (e.g. NIWD-2054, NIWD-1694) so we standardize rather than duplicate.</li>
+        <li><b>Confirm the data model</b> — verify whether these are one overloaded status field or three separate fields; that decides whether the fix is a data-layer split.</li>
+        <li><b>Roll out + migrate</b> — apply the standard screen-by-screen and remap legacy values (e.g. INVITED / ENROLLING) to the correct track.</li>
+      </ol>
+    </div>
+
+    <div class="card standardcard">
+      <h2>The status standard <span class="propose">proposed — pending confirmation</span></h2>
+      <div class="sub">One official set per track. Product variations are called out where they exist. This is the single reference every ILIA screen — and every future ticket — should point to.</div>
+
+      <div class="track">
+        <div class="tname">1 · Account Status <span class="var novar">no product variation</span></div>
+        <div class="tvals">Invited → Opened Invite → Account Created → Disabled</div>
+        <div class="tnote">Product-independent, timestamped. <b>Disabled</b> is a manual admin action, can apply from any prior state, and is not the account's authoritative status across ILIA.</div>
+      </div>
+
+      <div class="track">
+        <div class="tname">2 · Enrollment Status <span class="var hasvar">varies by product</span></div>
+        <div class="tvals"><b>Kai-Zen:</b> Started Enrollment → Basic Info → Application → Proposal → Trustee &amp; Final Docs → <b>Enrollment Completed</b></div>
+        <div class="tvals"><b>GWT:</b> variation of the above for the Gen-1 giftor / Gen-2 recipient flow <span class="flag">(confirm exact steps)</span></div>
+        <div class="tvals"><b>IUL:</b> a different step set <span class="flag">(definition still needed)</span></div>
+        <div class="tnote">Step-based and rolled up to a headline; the step set comes from the product's enrollment template — this is the track that legitimately varies.</div>
+      </div>
+
+      <div class="track">
+        <div class="tname">3 · Policy Status <span class="var">one enum — product variation TBD</span></div>
+        <div class="tvals"><b>Pre-Issue:</b> Proposed · Design · Quoted · Payment Received · Case Submitted</div>
+        <div class="tvals"><b>Issued:</b> In-Force · In-Force-Override <span class="flag">(UI today shows "Policy Issued" / "Policy Issued - Override" — pick one label and standardize)</span></div>
+        <div class="tvals"><b>Did not issue:</b> Medically Declined · Client Declined · Inactive <span class="newtag">NEW · NIWD-2054</span></div>
+        <div class="tvals"><b>Terminated:</b> Surrendered · Deceased</div>
+        <div class="tnote"><b>Removed:</b> INVITED (→ Account) and ENROLLING (→ Enrollment). Code constants (IN-FORCE, CASESUBMITTED, PAYMENTRECEIVED…) must map 1:1 to these labels. Whether the enum itself varies by product is still open.</div>
+      </div>
     </div>
 
     <div class="selbar">
