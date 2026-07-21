@@ -230,7 +230,7 @@
       <div class="track">
         <div class="tname">3 · Policy Status <span class="var">one enum — product variation TBD</span></div>
         <div class="tvals"><b>Pre-Issue:</b> Proposed · Design · Quoted · Payment Received · Case Submitted</div>
-        <div class="tvals"><b>Issued:</b> In-Force · In-Force-Override <span class="flag">(UI today shows "Policy Issued" / "Policy Issued - Override" — pick one label and standardize)</span></div>
+        <div class="tvals"><b>Issued:</b> Policy Issued · Policy Issued - Override <span class="flag">(official labels — code constants IN-FORCE / IN-FORCE-OVERRIDE map to them)</span></div>
         <div class="tvals"><b>Did not issue:</b> Medically Declined · Client Declined · Inactive <span class="newtag">NEW · NIWD-2054</span></div>
         <div class="tvals"><b>Terminated:</b> Surrendered · Deceased</div>
         <div class="tnote"><b>Removed:</b> INVITED (→ Account) and ENROLLING (→ Enrollment). Code constants (IN-FORCE, CASESUBMITTED, PAYMENTRECEIVED…) must map 1:1 to these labels. Whether the enum itself varies by product is still open.</div>
@@ -359,8 +359,8 @@
         </div>
         <div class="lgroup">
           <div class="gt">Issued</div>
-          <span class="state" data-k="inforce" onclick="showPolicyDef(this)">In-Force</span>
-          <span class="state" data-k="inforceov" onclick="showPolicyDef(this)">In-Force-Override</span>
+          <span class="state" data-k="inforce" onclick="showPolicyDef(this)">Policy Issued</span>
+          <span class="state" data-k="inforceov" onclick="showPolicyDef(this)">Policy Issued - Override</span>
         </div>
         <div class="lgroup">
           <div class="gt">Did not issue</div>
@@ -449,11 +449,11 @@
         <div class="mhead"><span class="mname">3 · Policy Status</span> <span class="var">one enum — product variation TBD</span></div>
         <div class="lifecol">
           <div class="lgroup"><div class="gt">Pre-Issue</div><span class="state">Proposed</span><span class="state">Design</span><span class="state">Quoted</span><span class="state">Payment Received</span><span class="state">Case Submitted</span></div>
-          <div class="lgroup"><div class="gt">Issued</div><span class="state">In-Force</span><span class="state">In-Force-Override</span></div>
+          <div class="lgroup"><div class="gt">Issued</div><span class="state">Policy Issued</span><span class="state">Policy Issued - Override</span></div>
           <div class="lgroup"><div class="gt">Did not issue</div><span class="state">Medically Declined <span class="tagnew">NEW</span></span><span class="state">Client Declined <span class="tagnew">NEW</span></span><span class="state">Inactive <span class="tagnew">NEW</span></span></div>
           <div class="lgroup"><div class="gt">Terminated</div><span class="state">Surrendered</span><span class="state">Deceased</span></div>
         </div>
-        <div class="note"><b>Label note:</b> In-Force / In-Force-Override display as "Policy Issued" / "Policy Issued - Override" today — standardize to one. <b>Removed:</b> INVITED (→ Account), ENROLLING (→ Enrollment). Code constants (IN-FORCE, CASESUBMITTED…) map 1:1 to these labels.</div>
+        <div class="note"><b>Label note:</b> Official labels are "Policy Issued" / "Policy Issued - Override" (code constants IN-FORCE / IN-FORCE-OVERRIDE map to them). <b>Removed:</b> INVITED (→ Account), ENROLLING (→ Enrollment). Code constants (IN-FORCE, CASESUBMITTED…) map 1:1 to these labels.</div>
       </div>
     </div>
 
@@ -507,7 +507,7 @@
           <td>ILIA</td><td>Kai-Zen</td>
           <td class="col-fix"><span class="wrongval">Policy Issued</span><br><span class="rightval">Account Created</span></td>
           <td class="col-add">Enrollment Completed</td>
-          <td>In-Force-Override</td>
+          <td>Policy Issued - Override</td>
           <td>•••• ▾</td><td>••••••</td>
         </tr>
         <tr>
@@ -515,14 +515,14 @@
           <td>PAPER</td><td>Kai-Zen</td>
           <td class="col-fix"><span class="wrongval">Policy Issued</span><br><span class="rightval">Account Created</span></td>
           <td class="col-add">Enrollment Completed</td>
-          <td>In-Force</td>
+          <td>Policy Issued</td>
           <td>•••• ▾</td><td>••••••</td>
         </tr>
       </tbody>
     </table>
 
     <div class="tm-callout">
-      <b>The bug this cleanup fixes:</b> the <b>Account Status</b> column here is rendering a <b>policy</b> value ("Policy Issued") — a policy status, not an account status. After the three-track fix, that column shows account-lifecycle values only (<b>Invited / Opened Invite / Account Created / Disabled</b>), while <b>Policy Status</b> keeps the cleaned policy enum (In-Force, etc.). Struck red = current wrong value; green = corrected. A new <b>Enrollment Status</b> column (green) is added so all three tracks — Account · Policy · Enrollment — appear side by side, matching the Statuses tab.
+      <b>The bug this cleanup fixes:</b> the <b>Account Status</b> column here is rendering a <b>policy</b> value ("Policy Issued") — a policy status, not an account status. After the three-track fix, that column shows account-lifecycle values only (<b>Invited / Opened Invite / Account Created / Disabled</b>), while <b>Policy Status</b> keeps the cleaned policy enum (Policy Issued, etc.). Struck red = current wrong value; green = corrected. A new <b>Enrollment Status</b> column (green) is added so all three tracks — Account · Policy · Enrollment — appear side by side, matching the Statuses tab.
     </div>
 
     <div class="masknote">PII masked per CIH Core §2 — names, IMOs, dates masked; test-tranche data only.</div>
@@ -620,8 +620,8 @@
     quoted:    {n:'Quoted', g:'Pre-Issue', m:'A firm quote/illustration has been produced and is ready to present.', t:'A finalized quote/illustration is generated and saved on the case.', l:'Enrollment: Proposal approved/presented.'},
     payment:   {n:'Payment Received', g:'Pre-Issue', m:'The client’s initial payment/premium has been received.', t:'Payment is posted against the policy.', l:'Enrollment: “Client Payment Received” step complete.'},
     casesub:   {n:'Case Submitted', g:'Pre-Issue', m:'The application package has been submitted to the carrier. Last state before carrier owns it.', t:'Application / final docs submitted to carrier.', l:'Enrollment: “Application Submitted” / “Final Docs Sent to Carrier” complete. Handoff point — carrier events drive status after this.'},
-    inforce:   {n:'In-Force', g:'Issued', m:'The carrier issued the policy and it is active.', t:'Carrier confirms the policy is issued/active (feed or manual confirmation).', l:'Post-enrollment — carrier-driven.'},
-    inforceov: {n:'In-Force-Override', g:'Issued', m:'Policy marked in-force by an admin override rather than the normal carrier feed.', t:'Admin manually sets in-force (override action) — needs a reason/audit trail.', l:'Post-enrollment — admin action.'},
+    inforce:   {n:'Policy Issued', g:'Issued', m:'The carrier issued the policy and it is active.', t:'Carrier confirms the policy is issued/active (feed or manual confirmation).', l:'Post-enrollment — carrier-driven. Code constant: IN-FORCE.'},
+    inforceov: {n:'Policy Issued - Override', g:'Issued', m:'Policy marked issued by an admin override rather than the normal carrier feed.', t:'Admin manually sets it issued (override action) — needs a reason/audit trail.', l:'Post-enrollment — admin action. Code constant: IN-FORCE-OVERRIDE.'},
     meddecl:   {n:'Medically Declined', g:'Did not issue', m:'The carrier declined the case for medical / underwriting reasons.', t:'Carrier underwriting decision = declined (medical).', l:'Terminal-negative. (NEW value.)'},
     clidecl:   {n:'Client Declined', g:'Did not issue', m:'The client chose not to proceed / declined the offer.', t:'Client action, or admin marks the case client-declined.', l:'Terminal-negative. (NEW value.)'},
     inactive:  {n:'Inactive', g:'Did not issue', m:'Case is dormant / abandoned and never activated. ⚠ Definition to confirm: never-activated vs lapsed.', t:'Inactivity rule (e.g., no progress in N days) or admin sets inactive — exact rule TBD.', l:'Terminal-negative. (NEW value — needs a clear definition.)'},
