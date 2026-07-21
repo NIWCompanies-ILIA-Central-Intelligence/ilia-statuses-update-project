@@ -223,7 +223,7 @@
         <div class="tname">2 · Enrollment Status <span class="var hasvar">varies by product</span></div>
         <div class="tvals"><b>Kai-Zen:</b> Started Enrollment → Basic Info → Application → Proposal → Trustee &amp; Final Docs → <b>Enrollment Completed</b></div>
         <div class="tvals"><b>GWT:</b> variation of the above for the Gen-1 giftor / Gen-2 recipient flow <span class="flag">(confirm exact steps)</span></div>
-        <div class="tvals"><b>IUL:</b> a different step set <span class="flag">(definition still needed)</span></div>
+        <div class="tvals"><b>IUL:</b> Application step defined — 7 sections (About You · Owner · Beneficiary · Suitability · Existing Insurance · Payment · Producer) → Completed, + Insured/Agent signatures <span class="flag">(full step sequence still to confirm)</span></div>
         <div class="tnote">Step-based and rolled up to a headline; the step set comes from the product's enrollment template — this is the track that legitimately varies.</div>
       </div>
 
@@ -316,24 +316,21 @@
         <div class="note">All steps complete → headline status = <b>Enrollment Completed</b>.</div>
       </div>
 
-      <!-- IUL steps (placeholder) -->
+      <!-- IUL steps (from Brad's IUL enrollment screen) -->
       <div class="enr-iul" hidden>
-        <div class="row"><div class="lbl">Started Enrollment</div><div class="ts done">07-16-2026</div><div class="st done">Completed</div></div>
-        <div class="stephdr">Step 1 · Basic Info</div>
-        <div class="row"><div class="lbl">Basic info, contribution, Required Docs</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
-        <div class="stephdr">Step 2 · Application</div>
-        <div class="row"><div class="lbl">Questionnaire Completed</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
-        <div class="row"><div class="lbl">Client Application Signed</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
-        <div class="row"><div class="lbl">Agent Report Signed</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
-        <div class="row"><div class="lbl">Application Submitted to Carrier</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
-        <div class="stephdr">Step 3 · Underwriting</div>
-        <div class="row"><div class="lbl">Medical Exam / Labs</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
-        <div class="row"><div class="lbl">Underwriting Review</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
-        <div class="row"><div class="lbl">Carrier Decision</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
-        <div class="stephdr">Step 4 · Policy Issue</div>
-        <div class="row"><div class="lbl">Client Payment Received</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
-        <div class="row"><div class="lbl">Policy Delivered / Signed</div><div class="ts">—</div><div class="st todo">Incomplete</div></div>
-        <div class="note"><span class="flag">IUL step set is a PLACEHOLDER</span> — no trustee/trust step (individual life). Needs the real IUL enrollment screenshot/definition to finalize.</div>
+        <div class="stephdr">Step 2 · Application — Status: Completed</div>
+        <div class="row"><div class="lbl">Application Sections</div><div class="ts done">7 of 7</div><div class="st done">Completed</div></div>
+        <div class="row"><div class="lbl">About You</div><div class="ts">—</div><div class="st done">Completed</div></div>
+        <div class="row"><div class="lbl">Owner</div><div class="ts">—</div><div class="st done">Completed</div></div>
+        <div class="row"><div class="lbl">Beneficiary</div><div class="ts">—</div><div class="st done">Completed</div></div>
+        <div class="row"><div class="lbl">Suitability</div><div class="ts">—</div><div class="st done">Completed</div></div>
+        <div class="row"><div class="lbl">Existing Insurance</div><div class="ts">—</div><div class="st done">Completed</div></div>
+        <div class="row"><div class="lbl">Payment</div><div class="ts">—</div><div class="st done">Completed</div></div>
+        <div class="row"><div class="lbl">Producer</div><div class="ts">—</div><div class="st done">Completed</div></div>
+        <div class="stephdr">Signatures — 2 of 2 signed</div>
+        <div class="row"><div class="lbl">Insured</div><div class="ts done">07-09-2026</div><div class="st done">Signed</div></div>
+        <div class="row"><div class="lbl">Agent</div><div class="ts done">07-09-2026</div><div class="st done">Signed</div></div>
+        <div class="note">IUL enrollment (from Brad's screen): each section shows <b>Completed</b> (replacing "100%"), and the Application step tracks a Signatures block (Insured + Agent). <span class="flag">This is the Application step; Step 1 and any post-Application steps still to confirm.</span> Sample names masked.</div>
       </div>
     </div>
 
@@ -396,7 +393,7 @@
       <h3>Open questions / impact to confirm before requirements are locked</h3>
       <ol>
         <li><b>Policy-status enum scope:</b> shared across all products, or per-product (configurable) like the enrollment step set? — <i>flagged per your call.</i></li>
-        <li><b>IUL enrollment steps:</b> the IUL track above is a placeholder — need the real IUL step definition/screenshot to finalize.</li>
+        <li><b>IUL enrollment steps:</b> Application step now defined from Brad's screen (7 sections + Insured/Agent signatures); confirm Step 1 and any post-Application steps to complete the IUL track.</li>
         <li><b>Track handoff:</b> confirm enrollment auto-drives policy status up to "Case Submitted," then carrier events take over.</li>
         <li><b>"Inactive" definition:</b> never-activated vs lapsed/dormant?</li>
         <li><b>Client Snapshot "Current Status":</b> which single track is the headline (composite, or furthest-along)?</li>
@@ -428,7 +425,7 @@
           <button class="ptab" onclick="setEnrProd('gwt', this)">GWT</button>
           <button class="ptab" onclick="setEnrProd('iul', this)">IUL</button>
         </div>
-        <div class="enrprod enr-kz">
+        <div class="enrprod menr-kz">
           <div class="lifecol">
             <div class="lgroup"><div class="gt">Step 1 · Basic Info</div><span class="state">Basic info, contribution, required docs</span></div>
             <div class="lgroup"><div class="gt">Step 2 · Application</div><span class="state">Questionnaire</span><span class="state">Client App Signed</span><span class="state">Agent Report Signed</span><span class="state">App Submitted to Carrier</span><span class="state">App Received by Carrier</span></div>
@@ -437,11 +434,16 @@
             <div class="lgroup"><div class="gt">Complete</div><span class="state cur">Enrollment Completed</span></div>
           </div>
         </div>
-        <div class="enrprod enr-gwt" hidden>
+        <div class="enrprod menr-gwt" hidden>
           <div class="note flag">GWT enrollment variation — exact steps to be confirmed. Overlaps the GWT lane (W-GWT); its Gen-1 giftor / Gen-2 recipient invite + application flow feeds this track.</div>
         </div>
-        <div class="enrprod enr-iul" hidden>
-          <div class="note flag">IUL enrollment step set — definition still needed (Brad to send the IUL enrollment screen). Will be filled in once confirmed.</div>
+        <div class="enrprod menr-iul" hidden>
+          <div class="lifecol">
+            <div class="lgroup"><div class="gt">Step 2 · Application (7 of 7)</div><span class="state">About You</span><span class="state">Owner</span><span class="state">Beneficiary</span><span class="state">Suitability</span><span class="state">Existing Insurance</span><span class="state">Payment</span><span class="state">Producer</span></div>
+            <div class="lgroup"><div class="gt">Signatures (2 of 2)</div><span class="state">Insured — signed</span><span class="state">Agent — signed</span></div>
+            <div class="lgroup"><div class="gt">Step status</div><span class="state cur">Completed</span></div>
+          </div>
+          <div class="note">From the IUL enrollment screen: the <b>Application</b> step breaks into 7 sections (About You · Owner · Beneficiary · Suitability · Existing Insurance · Payment · Producer), each shown as <b>Completed</b> (replacing "100%"), plus a Signatures block (Insured + Agent). <span class="flag">Full IUL step sequence (Step 1 and any post-Application steps) still to confirm — this screen shows the Application step.</span></div>
         </div>
       </div>
 
@@ -583,9 +585,9 @@
 <script>
   function toggleDev(id){ var e=document.getElementById(id); e.hidden=!e.hidden; }
   function setEnrProd(p, btn){
-    document.querySelector('.enr-kz').hidden  = p!=='kaizen';
-    document.querySelector('.enr-gwt').hidden = p!=='gwt';
-    document.querySelector('.enr-iul').hidden = p!=='iul';
+    document.querySelector('.menr-kz').hidden  = p!=='kaizen';
+    document.querySelector('.menr-gwt').hidden = p!=='gwt';
+    document.querySelector('.menr-iul').hidden = p!=='iul';
     document.querySelectorAll('.prodtabs .ptab').forEach(function(b){ b.classList.remove('active'); });
     btn.classList.add('active');
   }
